@@ -40,11 +40,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Third Party Apps
+    'mozilla_django_oidc',
     # Custom Apps
     'users.apps.UsersConfig',
+    'sample.apps.SampleConfig',
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
+
+# Add 'mozilla_django_oidc' authentication backend
+AUTHENTICATION_BACKENDS = (
+    'config.backend.MyOIDCAB',
+    # 'mozilla_django_oidc.auth.OIDCAuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -54,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'mozilla_django_oidc.middleware.SessionRefresh',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -128,3 +139,35 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = "sample:index"
+
+# moziall-oidc-django settings for Azure AD
+OIDC_RP_CLIENT_ID = os.getenv("AAD_OIDC_RP_CLIENT_ID")
+OIDC_RP_CLIENT_SECRET = os.getenv("AAD_OIDC_RP_CLIENT_SECRET")
+OIDC_RP_SIGN_ALGO = os.getenv("AAD_OIDC_RP_SIGN_ALGO", "RS256")
+OIDC_OP_JWKS_ENDPOINT = os.getenv("AAD_OIDC_OP_JWKS_ENDPOINT")
+OIDC_OP_AUTHORIZATION_ENDPOINT = os.getenv("AAD_OIDC_OP_AUTHORIZATION_ENDPOINT")
+OIDC_OP_TOKEN_ENDPOINT = os.getenv("AAD_OIDC_OP_TOKEN_ENDPOIT")
+OIDC_OP_USER_ENDPOINT = os.getenv("AAD_OIDC_OP_USER_ENDPOINT")
+LOGOUT_REDIRECT_URL = os.getenv("AAD_LOGOUT_REDIRECT_URL")
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'loggers': {
+        'mozilla_django_oidc': {
+            'handlers': ['console'],
+            'level': 'DEBUG'
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+}
