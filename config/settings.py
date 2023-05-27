@@ -51,8 +51,11 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 # Add 'mozilla_django_oidc' authentication backend
 AUTHENTICATION_BACKENDS = (
+    # Azure AD でのログイン
     'config.backend.MyOIDCAB',
     # 'mozilla_django_oidc.auth.OIDCAuthenticationBackend',
+
+    # djangoのID/Passでのログイン
     'django.contrib.auth.backends.ModelBackend',
 )
 
